@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Painel corporativo para acompanhamento do fluxo de ajuizamento de devedores Moveedu — Converty Recuperadora de Ativos." />
+  <title>Fluxo de Ajuizamento Moveedu | Converty</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/logo-placeholder.svg" />
+
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Ícones -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+
+  <!-- CSS do projeto -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body class="locked">
+
+  <!-- ============== TELA DE LOGIN ============== -->
+  <div class="login-screen" id="loginScreen" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="login-bg-shapes" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="login-card" id="loginCard">
+      <div class="login-header">
+        <div class="login-logo-wrap" id="loginLogoWrap">
+          <!-- Substitua pela logo da Converty quando disponível: -->
+          <!-- <img src="assets/images/logo-converty.jpg" alt="Logo Converty" class="login-logo-img" /> -->
+          <i class="bi bi-shield-lock-fill"></i>
+        </div>
+        <h1 class="login-title" id="loginTitle">Fluxo de Ajuizamento</h1>
+        <div class="login-subtitle">Moveedu • Converty</div>
+        <p class="login-tagline">Acesso restrito ao painel gerencial</p>
+      </div>
+
+      <form class="login-form" id="loginForm" autocomplete="off" novalidate>
+        <div class="login-field">
+          <label for="loginPassword">Senha de acesso</label>
+          <div class="login-input-wrap">
+            <i class="bi bi-key-fill input-icon"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              class="login-input"
+              placeholder="Digite a senha..."
+              autocomplete="current-password"
+              required
+              aria-describedby="loginFeedback"
+            />
+            <button type="button" class="login-toggle-pwd" id="loginTogglePwd" aria-label="Mostrar/ocultar senha" tabindex="-1">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-feedback" id="loginFeedback" role="alert" aria-live="polite"></div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>Acessar</span>
+        </button>
+
+        <div class="login-attempts" id="loginAttempts"></div>
+      </form>
+
+      <div class="login-footer">
+        <i class="bi bi-shield-check"></i>
+        <span>Converty Recuperadora de Ativos · v1.0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== SIDEBAR ============== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="assets/images/logo-placeholder.svg" alt="Logo Moveedu" class="sidebar-logo" id="sidebarLogo" />
+      <button class="sidebar-toggle" id="sidebarToggle" title="Recolher menu" aria-label="Recolher menu">
+        <i class="bi bi-list"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Menu principal">
+      <a href="#" class="nav-item active" data-view="dashboard">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-view="kanban">
+        <i class="bi bi-kanban"></i>
+        <span>Fluxo</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-logout" id="logoutBtn" title="Sair do painel">
+        <i class="bi bi-box-arrow-left"></i>
+        <span>Sair</span>
+      </button>
+      <div class="sidebar-version">v1.0 • Converty</div>
+    </div>
+  </aside>
+
+  <!-- ============== ÁREA PRINCIPAL ============== -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          <p class="page-subtitle">FLUXO DE AJUIZAMENTO MOVEEDU</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Filtro de Marca -->
+        <div class="filter-wrapper" id="filterWrapper">
+          <button class="btn btn-secondary" id="filterBtn" aria-haspopup="listbox" aria-expanded="false">
+            <i class="bi bi-funnel"></i>
+            <span>Marcas</span>
+            <span class="filter-badge" id="filterBadge" hidden>0</span>
+          </button>
+          <div class="filter-dropdown" id="filterDropdown" role="listbox" aria-label="Filtro de marcas">
+            <div class="filter-search">
+              <i class="bi bi-search"></i>
+              <input type="text" id="filterSearch" placeholder="Buscar marca..." />
+            </div>
+            <div class="filter-actions">
+              <button id="filterSelectAll" class="filter-link">Selecionar todas</button>
+              <button id="filterClear" class="filter-link">Limpar</button>
+            </div>
+            <div class="filter-options" id="filterOptions">
+              <p class="filter-empty">Carregue uma base para listar as marcas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload -->
+        <label for="fileInput" class="btn btn-primary">
+          <i class="bi bi-cloud-upload"></i>
+          <span>Atualizar Base</span>
+        </label>
+        <input type="file" id="fileInput" accept=".xls,.xlsx,.xlsm" hidden />
+      </div>
+    </header>
+
+    <!-- Status / Banner -->
+    <div class="status-banner" id="statusBanner" hidden>
+      <i class="bi bi-info-circle"></i>
+      <span id="statusBannerText">Nenhuma base carregada. Clique em "Atualizar Base" para iniciar.</span>
+      <button class="status-close" id="statusBannerClose" aria-label="Fechar">&times;</button>
+    </div>
+
+    <!-- Tela: Empty State -->
+    <section class="empty-state" id="emptyState">
+      <div class="empty-card">
+        <div class="empty-icon">
+          <i class="bi bi-file-earmark-spreadsheet"></i>
+        </div>
+        <h2>Comece carregando a base de dados</h2>
+        <p>
+          Clique em <strong>Atualizar Base</strong> no canto superior direito e selecione
+          o arquivo <strong>.xls</strong> ou <strong>.xlsx</strong> com a aba
+          <strong>AJUIZADOS</strong>. O painel processará automaticamente e exibirá
+          os indicadores e o fluxo Kanban.
+        </p>
+        <label for="fileInput" class="btn btn-primary btn-lg">
+          <i class="bi bi-cloud-upload"></i>
+          <span>Selecionar arquivo Excel</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============== VIEW: DASHBOARD ============== -->
+    <section class="view view-dashboard" id="viewDashboard" hidden>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <article class="kpi-card kpi-blue">
+          <div class="kpi-icon"><i class="bi bi-folder2-open"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Total de Processos</span>
+            <strong class="kpi-value" id="kpiTotalProcessos">0</strong>
+            <span class="kpi-meta" id="kpiTotalProcessosMeta">Registros na base</span>
+          </div>
+        </article>
+
+        <article class="kpi-card kpi-green">
+          <div class="kpi-icon"><i class="bi bi-cash-stack"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Valor Total Envolvido</span>
+            <strong class="kpi-value" id="kpiValorTotal">R$ 0,00</strong>
+            <span class="kpi-meta">Somatório de Valor da Causa</span>
+          </div>
+        </article>
+
+        <article class="kpi-card kpi-purple">
+          <div class="kpi-icon"><i class="bi bi-people"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Devedores Únicos</span>
+            <strong class="kpi-value" id="kpiDevedores">0</strong>
+            <span class="kpi-meta">CNPJ/CPF distintos</span>
+          </div>
+        </article>
+
+        <article class="kpi-card kpi-teal">
+          <div class="kpi-icon"><i class="bi bi-check2-circle"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Protocoladas</span>
+            <strong class="kpi-value" id="kpiProtocoladas">0</strong>
+            <span class="kpi-meta" id="kpiProtocoladasMeta">0% do total</span>
+          </div>
+        </article>
+
+        <article class="kpi-card kpi-amber">
+          <div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Pendentes</span>
+            <strong class="kpi-value" id="kpiPendentes">0</strong>
+            <span class="kpi-meta" id="kpiPendentesMeta">Aguardando protocolo</span>
+          </div>
+        </article>
+
+        <article class="kpi-card kpi-rose">
+          <div class="kpi-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-label">Ticket Médio</span>
+            <strong class="kpi-value" id="kpiTicket">R$ 0,00</strong>
+            <span class="kpi-meta">Valor médio por processo</span>
+          </div>
+        </article>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="charts-grid">
+        <div class="chart-card chart-wide">
+          <header class="chart-header">
+            <div>
+              <h3>Evolução dos Ajuizamentos</h3>
+              <p class="chart-subtitle">Distribuição mensal por data de distribuição</p>
+            </div>
+            <div class="chart-toolbar">
+              <button class="chart-btn active" data-evol="month">Mensal</button>
+              <button class="chart-btn" data-evol="week">Semanal</button>
+            </div>
+          </header>
+          <div class="chart-body">
+            <canvas id="chartEvolucao"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <header class="chart-header">
+            <div>
+              <h3>Quantidade por Etapa</h3>
+              <p class="chart-subtitle">Devedores em cada fase do fluxo</p>
+            </div>
+          </header>
+          <div class="chart-body">
+            <canvas id="chartEtapas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <header class="chart-header">
+            <div>
+              <h3>Distribuição por Marca</h3>
+              <p class="chart-subtitle">Participação das marcas no total</p>
+            </div>
+          </header>
+          <div class="chart-body">
+            <canvas id="chartMarcas"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card chart-wide">
+          <header class="chart-header">
+            <div>
+              <h3>Valor Financeiro por Etapa</h3>
+              <p class="chart-subtitle">Soma do Valor da Causa em cada fase</p>
+            </div>
+          </header>
+          <div class="chart-body">
+            <canvas id="chartValorEtapas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de resumo por marca -->
+      <div class="table-card">
+        <header class="chart-header">
+          <div>
+            <h3>Resumo por Marca</h3>
+            <p class="chart-subtitle">Indicadores consolidados por marca</p>
+          </div>
+        </header>
+        <div class="table-wrapper">
+          <table class="data-table" id="tableMarcas">
+            <thead>
+              <tr>
+                <th>Marca</th>
+                <th class="num">Processos</th>
+                <th class="num">Devedores</th>
+                <th class="num">Valor Total</th>
+                <th class="num">Protocoladas</th>
+                <th class="num">Pendentes</th>
+                <th class="num">% Conclusão</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== VIEW: KANBAN ============== -->
+    <section class="view view-kanban" id="viewKanban" hidden>
+      <div class="kanban-toolbar">
+        <div class="kanban-stats" id="kanbanStats">
+          <span><strong>0</strong> processos no fluxo</span>
+        </div>
+        <div class="kanban-search">
+          <i class="bi bi-search"></i>
+          <input type="text" id="kanbanSearch" placeholder="Buscar por nome, CNPJ/CPF ou processo..." />
+        </div>
+      </div>
+
+      <div class="kanban-board" id="kanbanBoard">
+        <!-- Colunas geradas via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Overlay sidebar mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Modal de detalhes do devedor -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <h3 id="modalTitle">Detalhes do Processo</h3>
+        <button class="modal-close" id="modalClose" aria-label="Fechar">&times;</button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Bibliotecas externas -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Scripts do projeto -->
+  <script src="js/auth.js"></script>
+  <script src="js/data-processor.js"></script>
+  <script src="js/file-handler.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/kanban.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
