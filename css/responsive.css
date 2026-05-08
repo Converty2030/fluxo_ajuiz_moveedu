@@ -17,7 +17,7 @@
   .page-title { font-size: 20px; }
 
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .kpi-value { font-size: 22px; }
+  .kpi-value { font-size: clamp(18px, 2.4vw, 22px); }
 
   .empty-card { padding: 40px 28px; }
   .empty-card h2 { font-size: 21px; }
