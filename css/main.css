@@ -93,6 +93,13 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Garante que o atributo HTML `hidden` esconda o elemento mesmo que o
+   seletor da classe defina explicitamente um `display`. Sem isso, regras
+   como `.modal-overlay { display: flex }` deixam o modal visível. */
+[hidden] {
+  display: none !important;
+}
+
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
 input { font-family: inherit; }
