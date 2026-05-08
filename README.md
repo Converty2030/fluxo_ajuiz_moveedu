@@ -131,12 +131,33 @@ Use a extensão **Live Server** e clique em **"Go Live"** no canto inferior dire
 
 A base é um **arquivo Excel** (`.xls` ou `.xlsx`). Apenas a aba **`AJUIZADOS`** é considerada.
 
-### Atualizando os dados (não requer código)
+### Carregamento automático (recomendado)
 
-1. Acesse o painel publicado.
+O painel tenta carregar automaticamente o arquivo **`data/painel.xlsx`** do repositório toda vez que é aberto.
+
+**Para atualizar a base de forma centralizada:**
+
+1. Renomeie sua planilha mais recente para **`painel.xlsx`**.
+2. Substitua o arquivo `data/painel.xlsx` no repositório:
+   ```bash
+   git add data/painel.xlsx
+   git commit -m "data: atualiza base $(date +%Y-%m-%d)"
+   git push
+   ```
+   Ou via GitHub web: navegue até `data/painel.xlsx`, clique no lápis (✏️) → "Upload files" → arraste a nova versão.
+3. Aguarde ~1 minuto para o GitHub Pages republicar.
+4. Acesse o painel e faça **Ctrl + F5** se necessário (limpar cache).
+
+> ⚠️ **Privacidade:** se o repositório for público, qualquer pessoa com a URL `https://<usuario>.github.io/<repo>/data/painel.xlsx` poderá baixar a planilha. Veja `data/README.md` para opções de mitigação.
+
+### Upload manual (alternativo)
+
+Se preferir testar dados localmente sem fazer commit, ou se o `data/painel.xlsx` não existe ainda:
+
+1. Acesse o painel.
 2. No canto superior direito, clique em **Atualizar Base**.
-3. Selecione a planilha `.xlsx` ou `.xls` mais recente.
-4. Pronto: KPIs, gráficos, kanban e filtros são reprocessados automaticamente.
+3. Selecione uma planilha `.xlsx` ou `.xls`.
+4. Os dados serão exibidos **apenas durante a sessão atual** (não ficam salvos).
 
 ### Estrutura da planilha (aba `AJUIZADOS`)
 

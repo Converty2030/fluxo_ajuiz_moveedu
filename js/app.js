@@ -215,9 +215,73 @@
       .replace(/'/g, '&#039;');
   }
 
+  /* ---------- CARREGAMENTO AUTOMÁTICO (GitHub) ---------- */
+  // Caminho da base versionada no repositório.
+  // Para atualizar os dados: substitua este arquivo no GitHub via commit.
+  const REPO_BASE_PATH = 'data/painel.xlsx';
+
+  /**
+   * Tenta carregar a planilha hospedada no repositório.
+   * @returns {Promise<boolean>} true se carregou com sucesso, false caso contrário
+   */
+  async function tryLoadRepoBase() {
+    try {
+      showBanner('<i class="bi bi-arrow-clockwise"></i> Carregando base do repositório...');
+      // cache-bust pelo timestamp do dia (atualiza ao menos a cada hora)
+      const bust = Math.floor(Date.now() / 3600000);
+      const response = await fetch(`${REPO_BASE_PATH}?v=${bust}`, { cache: 'no-cache' });
+      if (!response.ok) {
+        // 404 = arquivo não existe ainda (esperado em primeiro deploy)
+        if (response.status === 404) return false;
+        throw new Error(`HTTP ${response.status} ao baixar a base.`);
+      }
+
+      const buffer = await response.arrayBuffer();
+      const wb = XLSX.read(new Uint8Array(buffer), {
+        type: 'array',
+        cellDates: true,
+        cellNF: false,
+        cellText: false
+      });
+      const result = DataProcessor.process(wb);
+      App.raw = result;
+
+      Filters.setMarcas(DataProcessor.listMarcas(result.rows));
+      switchView(App.currentView);
+      renderActiveView();
+
+      // Tenta obter Last-Modified do servidor (GitHub Pages costuma enviar)
+      const lastMod = response.headers.get('last-modified');
+      const dateInfo = lastMod
+        ? new Date(lastMod).toLocaleString('pt-BR')
+        : new Date().toLocaleString('pt-BR');
+
+      showBanner(
+        `<i class="bi bi-cloud-check"></i> Base carregada do repositório • ` +
+        `${result.rows.length} registro(s) • atualizada em ${dateInfo}`
+      );
+
+      Toast.show({
+        type: 'success',
+        title: 'Base atualizada do GitHub',
+        message: `${result.rows.length} registro(s) carregado(s) automaticamente.`
+      });
+
+      if (result.warnings.length) {
+        result.warnings.forEach(w => {
+          Toast.show({ type: 'warning', title: 'Atenção', message: w });
+        });
+      }
+      return true;
+    } catch (err) {
+      console.warn('[Auto-load]', err);
+      return false;
+    }
+  }
+
   /* ---------- BOOT DO PAINEL ---------- */
   // Chamado APÓS autenticação bem-sucedida (ou se já autenticado nesta sessão)
-  function bootPanel() {
+  async function bootPanel() {
     Toast.init();
     setupNavigation();
     setupSidebar();
@@ -228,7 +292,17 @@
     Kanban.init();
     Filters.init(() => renderActiveView());
 
-    showBanner('<i class="bi bi-info-circle"></i> Nenhuma base carregada. Clique em <strong>Atualizar Base</strong> para iniciar.');
+    // 1. Tenta carregar a base do repositório (data/painel.xlsx)
+    const loaded = await tryLoadRepoBase();
+
+    // 2. Se não encontrou ou falhou, mostra empty state com instrução de upload
+    if (!loaded) {
+      showBanner(
+        '<i class="bi bi-info-circle"></i> Nenhuma base encontrada no repositório. ' +
+        'Clique em <strong>Atualizar Base</strong> para fazer upload manual ou ' +
+        'adicione <code>data/painel.xlsx</code> no GitHub.'
+      );
+    }
   }
 
   /* ---------- INIT ---------- */
